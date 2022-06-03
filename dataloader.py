@@ -44,7 +44,7 @@ class baseDataset(Dataset):
         initial_path = '/'.join(self.json_file.split('/')[:-1])
         for data in json_data:
             img_name = data['imagen']
-            point = data['punto']   # con estos datos se crean las etiquetas y se añaden a self.labels
+            control = data['Control_Veh\u00edculo']   # con estos datos se crean las etiquetas y se añaden a self.labels
             img_path = initial_path + '/out/' + img_name
             
             if(os.path.isfile((img_path))):   
@@ -61,18 +61,22 @@ class baseDataset(Dataset):
                 self.images.append(image)
 
 
-                label = torch.zeros(2)
+                label = torch.zeros(3)
                 # Normalizamos
-                if point['X'] < 0:
-                    point['X'] = 0
-                if point['X'] > self.img_size[1]:
-                    point['X'] = self.img_size[1]
-                if point['Y'] < 0:
-                    point['Y'] = 0
-                if point['Y'] > self.img_size[0]:
-                    point['Y'] = self.img_size[0]
-                label[0] = (point['X'] / self.img_size[1])  * 2 - 1
-                label[1] = (point['Y'] / self.img_size[0]) * 2 - 1
+                #if point['X'] < 0:
+                #   point['X'] = 0
+                #if point['X'] > self.img_size[1]:
+                #    point['X'] = self.img_size[1]
+                #if point['Y'] < 0:
+                #    point['Y'] = 0
+                #if point['Y'] > self.img_size[0]:
+                #    point['Y'] = self.img_size[0]
+                #label[0] = (point['X'] / self.img_size[1])  * 2 - 1
+                #label[1] = (point['Y'] / self.img_size[0]) * 2 - 1
+                #self.labels.append(label)
+                label[0] = control['acelerador']
+                label[1] = control['direccion']
+                label[2] = control['freno']
                 self.labels.append(label)
 
                 if index % 100 == 0:
@@ -84,7 +88,7 @@ class baseDataset(Dataset):
                     break
 
 
-dataset = baseDataset('data/VueltaRuido_condiciones/ConRuido_cond_clim.json')
+dataset = baseDataset('VueltaRuido_condiciones/ConRuido_cond_clim.json')
 trainloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=1)
 
 
